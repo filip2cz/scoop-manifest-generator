@@ -32,6 +32,8 @@ If you include `versionCommand` in config.json, you can include console command 
     "license": "AGPL-3.0-or-later",
     "url": "https://gif.ski/gifski-{version}.zip",
     "bin": "gifski.exe",
-    "versionCommand": "$gifskiVerFull = .\\gifski.exe --version; $gifskiVer = $gifskiVerFull.Replace(\"gifski \", \"\"); Write-Output $gifskiVer"
+    "versionCommand": "$gifskiVerFull = .\\gifski.exe --version; $gifskiVer = $gifskiVerFull.Replace(\\\"gifski \\\", \\\"\\\"); Write-Output $gifskiVer"
 }
 ```
+
+Yes, you need to use `/` three times!

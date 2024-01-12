@@ -13,21 +13,30 @@ Config configLoader = new Config();
 
 JObject config = configLoader.LoadConfig();
 
-PlatformID platform = Environment.OSVersion.Platform;
+string empty;
+
+string manifestName;
 
 try
 {
-    string manifestName = (string)config["manifestName"];
+    manifestName = (string)config["manifestName"];
 }
 catch (Exception)
 {
     Console.WriteLine("Failed to load manifest name, output will be output.json");
-    string manifestName = "output.json";
+    manifestName = "output.json";
 }
+
+PlatformID platform = Environment.OSVersion.Platform;
+
+bool versionSucessfull = false;
+
+string version = "no";
 
 if (config.ContainsKey("version"))
 {
-    string version = (string)config["version"];
+    version = (string)config["version"];
+    versionSucessfull = true;
 }
 else if (config.ContainsKey("versionCommand"))
 {
@@ -50,7 +59,7 @@ else if (config.ContainsKey("versionCommand"))
                 process.Start();
 
                 // get output from powershell
-                string version = process.StandardOutput.ReadToEnd();
+                version = process.StandardOutput.ReadToEnd();
                 string error = process.StandardError.ReadToEnd();
 
                 // Wait until process is done
@@ -65,6 +74,8 @@ else if (config.ContainsKey("versionCommand"))
                     Console.WriteLine("Error from powershell:");
                     Console.WriteLine(error);
                 }
+
+                versionSucessfull = true;
             }
         }
         catch (Exception ex1)
@@ -81,20 +92,42 @@ else if (config.ContainsKey("versionCommand"))
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     Arguments = $"/c {(string)config["versionCommand"]}"
+            
+                    versionSucessfull = true;
                 };
             }
             catch (Exception ex2)
             {*/
-                //Console.WriteLine("Failed to run both powershell.exe and cmd.exe");
-                Console.WriteLine("Failed to run powershell.exe");
+            //Console.WriteLine("Failed to run both powershell.exe and cmd.exe");
+            Console.WriteLine("Failed to run powershell.exe");
                 Console.WriteLine(ex1);
                 //Console.WriteLine(ex2);
                 throw;
             //}
         }
     }
+    else
+    {
+        Console.WriteLine("Only Windows is supported for now.");
+    }
 }
 else
 {
     Console.WriteLine("Error: unable to get version");
+}
+
+if (versionSucessfull)
+{
+    config["version"] = version.Replace("\n", "").Replace("\r", "");
+
+    string output = ReplaceVersion(config.ToString(), version);
+
+    File.WriteAllText(manifestName, output);
+}
+
+string ReplaceVersion(string json, string version)
+{
+    string output = json.Replace("{version}", version.Replace("\n", ""));
+
+    return output;
 }
