@@ -1,6 +1,8 @@
+> [!IMPORTANT]  
+> This was only proof of concept and it is not functional. If you want to make it functional, you can pull request, but I will not commit to this.
+
 # scoop-manifest-generator
 Scoop manifest generator originaly created for https://github.com/ur-fault/TMaze
-
 
 ## What is this:
 Tool for automation, basically alternative for official scoop update script.
